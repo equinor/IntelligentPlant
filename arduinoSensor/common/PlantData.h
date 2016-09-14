@@ -7,8 +7,8 @@
 // Data struts
 struct PlantData {
   unsigned short id;
-  int soilHumidity;
+  unsigned int soilHumidity;
   float airTemperature;
   float airHumidity;
-  int light;
+  unsigned int light;
 };
