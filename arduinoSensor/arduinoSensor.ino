@@ -4,14 +4,13 @@
 #include "printf.h"
 #include "common/PlantData.h"
 
-// TRANSMITTER
-
 RF24 radio(7, 8);
 
-
-//const byte rxAddr[6] = "00001";
 const unsigned char rxAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
 unsigned long time;
+
+// Device ID (HARDCODED FTW)
+unsigned short ID = 1;
 
 PlantData pd;
 
@@ -22,7 +21,6 @@ void setup()
   printf("Starting transmitter!\n");
   
   radio.begin();
-  
   radio.setPALevel(palevel);
   
   radio.setDataRate(dataRate);
@@ -33,16 +31,31 @@ void setup()
   radio.openWritingPipe(rxAddr);
   
   radio.stopListening();
+
+  uint8_t payloadSize = radio.getPayloadSize();
+  printf("payload size: %d\n", payloadSize);
+  
 }
 
 void loop()
 {
-  //time = millis();
-  const char text[] = "Hello World";
-  radio.write(&text, sizeof(text));
+  pd.id = ID;
+  pd.soilHumidity = 11;
+  pd.airTemperature = 3.14f;
+  pd.airHumidity = 0.6f;
+  pd.light = 66;
+
+  /*printf("pd.id -> %i\n", sizeof(pd.id));
+  printf("pd.solidHumidity -> %i\n", sizeof(pd.soilHumidity));
+  printf("pd.airTemperature -> %i\n", sizeof(pd.airTemperature));
+  printf("pd.airHumidity -> %i\n", sizeof(pd.airHumidity));
+  printf("pd.light -> %i\n", sizeof(pd.light));*/
+  
+  //const char text[] = "Hello World";
+  radio.write(&pd, sizeof(pd));
   //radio.write(&time, sizeof(time));
   //printf("Sent: %s, with time; %ul\n", text, time);
-  printf("Sent: %s\n", text);
+  printf("Sent: %i bytes of data\n", sizeof(pd));
   
   delay(1000);
 }
