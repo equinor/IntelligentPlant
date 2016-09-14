@@ -5,21 +5,13 @@
 #include "printf.h"
 #include "common/PlantData.h"
 
-// TRANSMITTER
-
 RF24 radio(7, 8);
 
-#define palevel RF24_PA_MAX
-
-#define dataRate RF24_250KBPS
-
-#define crcLength RF24_CRC_8
-
-//const byte rxAddr[6] = "00001";
 const unsigned char rxAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
 unsigned long time;
 
-const unsigned short sensorID = 1;
+// Device ID (HARDCODED FTW)
+const unsigned short ID = 1;
 
 const unsigned int moistureSensor = 0;
 const unsigned int tempSensor = 1;
@@ -78,7 +70,6 @@ void setup()
   printf("Starting transmitter!\n");
 
   radio.begin();
-
   radio.setPALevel(palevel);
 
   radio.setDataRate(dataRate);
@@ -90,7 +81,8 @@ void setup()
 
   radio.stopListening();
 
-  pd.id = sensorID;
+  uint8_t payloadSize = radio.getPayloadSize();
+  printf("payload size: %d\n", payloadSize);
 }
 
 void loop()
@@ -105,6 +97,7 @@ void loop()
 
   printSensorValues(moistureValue, tempValue, humidityValue, lightValue);
 
+  pd.id = ID;
   pd.soilHumidity = moistureValue;
   pd.airTemperature = tempValue;
 //  if (DHTLIB_OK == humidityValues) {
@@ -113,6 +106,12 @@ void loop()
   pd.light = lightValue;
 
   radio.write(&pd, sizeof(pd));
+
+  //const char text[] = "Hello World";
+  radio.write(&pd, sizeof(pd));
+  //radio.write(&time, sizeof(time));
+  //printf("Sent: %s, with time; %ul\n", text, time);
+  printf("Sent: %i bytes of data\n", sizeof(pd));
 
   delay(1000);
 }
