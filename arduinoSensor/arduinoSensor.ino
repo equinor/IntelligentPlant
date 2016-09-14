@@ -8,17 +8,12 @@
 
 RF24 radio(7, 8);
 
-#define palevel RF24_PA_MAX
-
-#define dataRate RF24_250KBPS
-
-#define crcLength RF24_CRC_8
 
 //const byte rxAddr[6] = "00001";
 const unsigned char rxAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
 unsigned long time;
 
-//PlantData pd;
+PlantData pd;
 
 void setup()
 {
