@@ -2,6 +2,7 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 #include "printf.h"
+#include "common/PlantData.h"
 
 // TRANSMITTER
 
@@ -17,8 +18,7 @@ RF24 radio(7, 8);
 const unsigned char rxAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
 unsigned long time;
 
-//struct {
-//};
+//PlantData pd;
 
 void setup()
 {
