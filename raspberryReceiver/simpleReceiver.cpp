@@ -22,6 +22,7 @@ TMRh20 2014 - Updated to work with optimized RF24 Arduino library
 #include <RF24/RF24.h>
 #include <time.h>
 #include <fstream>
+#include <algorithm>
 
 using namespace std;
 //
@@ -119,7 +120,7 @@ int main(int argc, char** argv){
   // optionally, increase the delay between retries & # of retries
   radio.setRetries(15,15);
   // Set the channel
-  // radio.setChannel(1);
+  radio.setChannel(109);
   // Set the data rate
   //radio.setDataRate(RF24_2MBPS);
   radio.setDataRate(RF24_250KBPS);
@@ -139,6 +140,7 @@ int main(int argc, char** argv){
     //file management
    ofstream sensorDataFile;
    sensorDataFile.open("sensorData.txt");
+   std::string message;
 
     // forever loop
     while (1)
@@ -157,10 +159,15 @@ int main(int argc, char** argv){
 		if (pd.id == 1) {
 		   time (&rawtime);
 		   timeinfo = localtime(&rawtime);
-		   fprintf(stdout, "Data: id %d Humidity %d Temperature %f Humidity %f Light %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, asctime(timeinfo));
-		   char string[200];
-		   sprintf(string, "Data: id %d Humidity %d Temperature %f Humidity %f Light %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, asctime(timeinfo));	
-		   sensorDataFile << string;	
+		   fprintf(stdout, "Data: id %d SH %d T %f AH %f L %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, asctime(timeinfo));
+		   char string[500];
+                   char * timeInfo2 = asctime(timeinfo);
+		   * remove(timeInfo2, timeInfo2+strlen(timeInfo2), '\n')='\0';
+
+		   sprintf(string, "Data: id %d SH %d T %f AH %f L %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, timeInfo2);	
+		   message = string;
+		   sensorDataFile << message << endl;
+		   //sensorDataFile.write(string);	
 		   // printf("Written to file");
                    // Dump the printable data of the payload
                    //showData();
@@ -170,6 +177,7 @@ int main(int argc, char** argv){
         delay(5);
     } // forever loop
   
+  sensorDataFile.close();
   return 0;
   
 }
