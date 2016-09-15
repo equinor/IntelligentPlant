@@ -84,6 +84,7 @@ const uint64_t pipes[2] = { 0xABCDABCD71LL, 0x544d52687CLL };   // Radio pipe ad
 const unsigned char rxAdress[6] = {0x00,0x00,0x00,0x00,0x00,0x01};
 char data[32] = {"_A message from RPi w/ NRF24L+!"};            //Data buffer
 
+
 //variables for managing time
 time_t rawtime;
 struct tm * timeinfo;
@@ -107,6 +108,7 @@ struct PlantData {
 	float airHumidity;
 	unsigned short light;
 };
+
 
 int main(int argc, char** argv){
 
@@ -172,8 +174,8 @@ int main(int argc, char** argv){
                    // Dump the printable data of the payload
                    //showData();
                    fflush(stdout);
-		}
-            }
+		} //end of pd.id>0
+            } 
         delay(5);
     } // forever loop
   

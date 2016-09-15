@@ -14,7 +14,6 @@ import tailhead
 
 Broker = "192.168.1.100"
 pub_topic_soiltemperature = "plant/01/sensor/soiltemperature"       # send messages to this topic 
-pub_topic_soilhumidity = "plant/01/sensor/soilhumidity"
 pub_topic_atmpressure = "plant/01/sensor/atmosphericpressure"
 pub_topic_airtemperature = "plant/01/sensor/airtemperature"
 
@@ -37,14 +36,31 @@ for line in tailhead.follow_path("sensorData.txt"):
 	now = datetime.now()
 	if line:
 		print("Data received" + line)
+		data = line.split(" ");
+		plantId=data[2]
+		pub_topic_soilhumidity = "plant/"+plantId+"/sensor/soilhumidity"
+		pub_topic_airtemperature = "plant/"+plantId+"/sensor/airtemperature"
+		airTemp = float(data[6])
 		temp_data = {
                 	'name' : 'air_temperature_sensor',
-                	'value' : line[19:29],
+                	'value' : airTemp,
                 	'timestamp' : now.strftime("%Y-%m-%d %H:%M:%S.%f")
                 }
     		json_str_temp = json.dumps(temp_data)
 		client.publish(pub_topic_airtemperature, json_str_temp)
     		print("publishing:" + pub_topic_airtemperature + json_str_temp)
+
+		soilHumidity = float(data[4])
+		hum_data = {
+                	'name' : 'soil_humidity_sensor',
+                	'value' : soilHumidity,
+                	'timestamp' : now.strftime("%Y-%m-%d %H:%M:%S.%f")
+                }
+    		json_str_hum = json.dumps(hum_data)
+		client.publish(pub_topic_soilhumidity, json_str_hum)
+ 		print("publishing:" + pub_topic_soilhumidity + json_str_hum)
+
+
 		time.sleep(1*10)
 	else:
 		time.sleep(0.05)

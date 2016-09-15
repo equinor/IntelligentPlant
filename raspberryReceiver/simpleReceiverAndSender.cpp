@@ -99,16 +99,16 @@ int main(int argc, char** argv){
 		} //end of pd.id>0
             } else { //end of radio available
 		radio.stopListening();
-		printf("\033[31;1mWriting data to radio\033[0m\n");
+//		printf("Writing data to radio\033[0m\n");
 
 		// TODO: Use incoming command from MQTT
 		cmd.command = 78;
 		cmd.value = 12;
 		cmd.magic = MAGIC;
 
-		printf(" Sending cmd: %d, value: %d to receivers...: ", cmd.command, cmd.value);
+		printf("\033[31;1mWriting to radio: %d, value: %d to receivers...: ", cmd.command, cmd.value);
 		radio.write(&cmd, sizeof(cmd));
-		printf("Done \n");
+		printf("Done\033[0m\n");
 		radio.startListening();
 		delay(200);
 	    }; //end of sending 

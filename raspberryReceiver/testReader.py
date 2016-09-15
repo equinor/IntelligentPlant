@@ -7,7 +7,8 @@ import tailhead
 ## sensorData= open("sensorData.txt", r)		
 for line in tailhead.follow_path("sensorData.txt"):
 	if line:
-		print("Data received" + line[19:29])
+		data = line.split(" ")
+		print(data)
 	else:
 		time.sleep(0.05)
 
