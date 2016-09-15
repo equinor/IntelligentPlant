@@ -21,6 +21,8 @@ TMRh20 2014 - Updated to work with optimized RF24 Arduino library
 #include <string>
 #include <RF24/RF24.h>
 #include <time.h>
+#include <fstream>
+#include <algorithm>
 
 using namespace std;
 //
@@ -86,6 +88,8 @@ char data[32] = {"_A message from RPi w/ NRF24L+!"};            //Data buffer
 time_t rawtime;
 struct tm * timeinfo;
 
+
+
 void showData(void)
 {
       printf("Data: ");
@@ -95,6 +99,14 @@ void showData(void)
       printf("\n\r");
      //printf("Time: %ul\n", receivedTime);
 }
+
+struct PlantData {
+	unsigned short id;
+	unsigned short soilHumidity;
+	float airTemperature;
+	float airHumidity;
+	unsigned short light;
+};
 
 int main(int argc, char** argv){
 
@@ -108,7 +120,7 @@ int main(int argc, char** argv){
   // optionally, increase the delay between retries & # of retries
   radio.setRetries(15,15);
   // Set the channel
-  // radio.setChannel(1);
+  radio.setChannel(109);
   // Set the data rate
   //radio.setDataRate(RF24_2MBPS);
   radio.setDataRate(RF24_250KBPS);
@@ -124,6 +136,12 @@ int main(int argc, char** argv){
 
     radio.printDetails();
     printf("Start loop:\n");
+    PlantData pd;
+    //file management
+   ofstream sensorDataFile;
+   sensorDataFile.open("sensorData.txt");
+   std::string message;
+
     // forever loop
     while (1)
     {
@@ -137,11 +155,20 @@ int main(int argc, char** argv){
             if(radio.available()){
 		// printf("Listening on radio\n");
                 // Read any available payloads for analysis
-                radio.read(&data,12);
-		if (data[0] != 0) {
+                radio.read(&pd, sizeof(pd));
+		if (pd.id == 1) {
 		   time (&rawtime);
 		   timeinfo = localtime(&rawtime);
-		   printf("Data: %s %s \n", data, asctime(timeinfo));
+		   fprintf(stdout, "Data: id %d SH %d T %f AH %f L %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, asctime(timeinfo));
+		   char string[500];
+                   char * timeInfo2 = asctime(timeinfo);
+		   * remove(timeInfo2, timeInfo2+strlen(timeInfo2), '\n')='\0';
+
+		   sprintf(string, "Data: id %d SH %d T %f AH %f L %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, timeInfo2);	
+		   message = string;
+		   sensorDataFile << message << endl;
+		   //sensorDataFile.write(string);	
+		   // printf("Written to file");
                    // Dump the printable data of the payload
                    //showData();
                    fflush(stdout);
@@ -149,7 +176,9 @@ int main(int argc, char** argv){
             }
         delay(5);
     } // forever loop
-
+  
+  sensorDataFile.close();
   return 0;
+  
 }
 
