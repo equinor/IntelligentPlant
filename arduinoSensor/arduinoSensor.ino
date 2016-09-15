@@ -100,17 +100,11 @@ void loop()
   pd.id = ID;
   pd.soilHumidity = moistureValue;
   pd.airTemperature = tempValue;
-//  if (DHTLIB_OK == humidityValues) {
   pd.airHumidity = humidityValue;
-  //}
   pd.light = lightValue;
 
   radio.write(&pd, sizeof(pd));
 
-  //const char text[] = "Hello World";
-  radio.write(&pd, sizeof(pd));
-  //radio.write(&time, sizeof(time));
-  //printf("Sent: %s, with time; %ul\n", text, time);
   printf("Sent: %i bytes of data\n", sizeof(pd));
 
   delay(1000);
