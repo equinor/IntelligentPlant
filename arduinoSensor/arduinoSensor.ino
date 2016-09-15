@@ -11,7 +11,7 @@ const unsigned char rxAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
 unsigned long time;
 
 // Device ID (HARDCODED FTW)
-const unsigned short ID = 1;
+const unsigned short ID = 2;
 
 const unsigned int moistureSensor = 0;
 const unsigned int tempSensor = 1;
@@ -68,8 +68,8 @@ void setup()
   Serial.begin(57600);
   printf_begin();
   printf("Starting transmitter!\n");
-
   radio.begin();
+  radio.setChannel(109);
   radio.setPALevel(palevel);
 
   radio.setDataRate(dataRate);
