@@ -156,7 +156,7 @@ int main(int argc, char** argv){
 		// printf("Listening on radio\n");
                 // Read any available payloads for analysis
                 radio.read(&pd, sizeof(pd));
-		if (pd.id == 1) {
+		if (pd.id > 0) {
 		   time (&rawtime);
 		   timeinfo = localtime(&rawtime);
 		   fprintf(stdout, "Data: id %d SH %d T %f AH %f L %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, asctime(timeinfo));
