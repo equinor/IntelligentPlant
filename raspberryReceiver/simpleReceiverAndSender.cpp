@@ -1,20 +1,3 @@
-/*
-2015-04-06 : Johan Boeckx - Arduino/RPi(2) nRF24L01+ : Raspberry Pi (2) code
-  Tested on Arduino UNO R3 and Raspberry Pi B Rev. 2.0 and Raspberry Pi 2 B
-
- Copyright (C) 2011 J. Coliz <maniacbug@ymail.com>
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-version 2 as published by the Free Software Foundation.
-
- 03/17/2013 : Charles-Henri Hallard (http://hallard.me)
-              Modified to use with Arduipi board http://hallard.me/arduipi
-                          Changed to use modified bcm2835 and RF24 library
-TMRh20 2014 - Updated to work with optimized RF24 Arduino library
-
-*/
-
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -94,13 +77,13 @@ int main(int argc, char** argv){
         //
 	
             if(radio.available()){
-		printf("Listening on radio\n");
+		printf("\033[32;1mListening on radio\033[0m\n");
                 // Read any available payloads for analysis
                 radio.read(&pd, sizeof(pd));
 		if (pd.id > 0) {
 		   time (&rawtime);
 		   timeinfo = localtime(&rawtime);
-		   fprintf(stdout, "Data: id %d SH %d T %f AH %f L %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, asctime(timeinfo));
+		   fprintf(stdout, " Data: id %d SH %d T %f AH %f L %d received at %s", pd.id, pd.soilHumidity, pd.airTemperature, pd.airHumidity, pd.light, asctime(timeinfo));
 		   char string[500];
                    char * timeInfo2 = asctime(timeinfo);
 		   * remove(timeInfo2, timeInfo2+strlen(timeInfo2), '\n')='\0';
@@ -116,16 +99,20 @@ int main(int argc, char** argv){
 		} //end of pd.id>0
             } else { //end of radio available
 		radio.stopListening();
+		printf("\033[31;1mWriting data to radio\033[0m\n");
+
+		// TODO: Use incoming command from MQTT
 		cmd.command = 78;
 		cmd.value = 12;
 		cmd.magic = MAGIC;
-		printf("Sending cmd: %d, value: %d to receivers...: \n", cmd.command, cmd.value);
+
+		printf(" Sending cmd: %d, value: %d to receivers...: ", cmd.command, cmd.value);
 		radio.write(&cmd, sizeof(cmd));
 		printf("Done \n");
 		radio.startListening();
-		delay(1200);
+		delay(200);
 	    }; //end of sending 
-        delay(100);
+        delay(1000);
     } // forever loop
   
   sensorDataFile.close();
