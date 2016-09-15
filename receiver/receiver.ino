@@ -13,22 +13,22 @@ unsigned long time;
 
 void setup()
 {
-  
+
   Serial.begin(57600);
   printf_begin();
   printf("Starting receiver!\n");
-  
+  radio.setChannel(109);
   radio.begin();
   printf("radio begin\n");
   radio.openReadingPipe(0, rxAddr);
   printf("radio open pipe\n");
-  
+
   radio.startListening();
   printf("radio start listening\n");
 }
 
 void loop()
-{ 
+{
   if (radio.available())
   {
     char text[32] = {0};
@@ -46,4 +46,3 @@ void loop()
     }
   }
 }
-
